@@ -1,0 +1,23 @@
+---
+title: "exploration"
+author: "James Needell"
+date: "2026-08-16"
+output: pdf_document
+---
+
+```{r read_in}
+# check layers
+library(sf)
+gdb_path <- "RDS-2013-0009.7_Data_Format2_GDB/Data/FPA_FOD_20260615.gdb"
+st_layers(gdb_path)
+# read in dataset as fires. simple features(sf) and st_read() allows for gbd file to be recognized
+fires <- st_read(gdb_path, layer = "Fires")
+```
+```{r tibbleizing}
+library(tidyverse)
+library(dplyr)
+glimpse(fires)
+Fires <- as.tibble(fires) # save as tibble
+# view(Fires)
+```
+
