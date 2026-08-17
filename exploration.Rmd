@@ -395,7 +395,7 @@ mode is most commonly occuring category or value in a dataset
 library(forcats)
 CO %>%
   select(NWCG_GENERAL_CAUSE, FIRE_SIZE_CLASS) %>%
-  ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) +
+  ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) + # factoring cat var then ordering
   geom_bar(aes(fill = FIRE_SIZE_CLASS)) +
   labs(
     y = "Cause",
