@@ -199,3 +199,29 @@ mad(CO_1[["acres_burned"]]) # scale of mad is adjusted to be on same scale as sd
 ```
 
 # Exploring Data Distribution
+percentiles and quantiles
+boxplots(based on quantiles)
+frequency tables and histograms
+
+```{r data distribution}
+# get a quick quantile table
+CO_1 %>%
+  pull(acres_burned) %>%
+  quantile(p = c(.05, 0.25, 0.5, 0.75, 0.95))
+# if the year had 9920.88 total acres burned it was in the 5th percentile
+# if 128704.22 acres burned the year was in the 75th percentile
+# median is 46334.76 acres burned
+
+# boxplot
+# looking at fire size and acres from 1992 - 2024. can always come back and make this look good
+# can clearly see that 2020 and 2002 had some of the biggest fires on record followed by 2018 then 2012
+ggplot(Fires %>%
+         filter(STATE == "CO"), aes(y = factor(FIRE_YEAR), x = FIRE_SIZE)) +
+  geom_boxplot(staplewidth = 0.25) +  
+  labs(
+    y = NULL,
+    x = "Fire Size (acres)"
+  )
+
+```
+
