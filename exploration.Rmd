@@ -24,25 +24,178 @@ Fires <- as.tibble(fires) # save as tibble
 # view(Fires)
 ```
 
-# what have I done so far?
+# What have I done so far?
 1) set up GitHub repo
 2) downloaded a data set
     - need to document source and citation information
 3) read in data set with simple features library
 4) saved as tibble and viewed it
 
-# goals
+# Goals
 1) read AI assisted statistics for data scientists and work through it with real world data
 2) read math for data science and work through it with python (using visual modeling to better understand concepts
 or manipulate real world data, not sure yet...)
 3) have this turn into a project stored on GitHub
 
-# next steps
+# Next steps
 1) read through statistics book and apply concepts to fires data set
     - probably first either create or import a data dictionary as a way to become familiar with the variables
 2) simultaneously work through math for data science with python
-  - this could be a different thing where I don't commit most of it to GitHub
+    - this could be a different thing where I don't commit most of it to GitHub
     but maybe I'll just commit anyway for practice
 
 Happy to have this set up and ready to start!
 
+```{r data_dictionary}
+# import csv provided with data
+data_dict <- as.tibble(read_csv("RDS-2013-0009.7_Data_Format2_GDB/Data/_variable_descriptions.csv", show_col_types = FALSE))
+# create a function to quickly look up variable description
+desc_var <- function(col_name){
+  data_dict %>%
+    filter(Variable == col_name) %>%
+    head(1) %>%
+    pull(Description) %>%
+    cat()
+}
+desc_var("Agency")
+# view(data_dict)
+```
+
+“A basic step in exploring your data is getting a “typical value” for each feature (variable):
+an estimate of where most of the data is located (i.e., its central tendency).” - AI assisted Stats
+
+Estimates of Location
+plan: choose a few variables and get an estimate of where the data is located or central tendency
+and identify outliers
+-mean
+-weighted mean (ex: if we are taking data from sensors and one sensor is less accurate we may down weight it)
+-median (robust)
+-percentile (robust)
+-weighted median (robust)
+-trimmed mean (can be robust) usually preferable to ordinary mean
+
+
+```{r estimates_of_location}
+# what variables do I want to look at?
+# fire size (categorical)
+print(desc_var("FIRE_SIZE"))
+# when the fire occured (start date)
+print(desc_var("DISCOVERY_DATE"))
+# where the fire occurred (categorical)
+print(desc_var("STATE"))
+
+# fire size or estimate of acres within the final perimeter of the fire
+  # look by US first then could go state by state
+fire_size <- Fires[["FIRE_SIZE"]] # index values in FIRE_SIZE col
+mean_fs <- mean(fire_size)
+median_fs <- median(fire_size)
+trimmed_mean_fs <- mean(fire_size, 0.1)
+# median is .72 and mean is 78 acres. This means there must be outliers
+# trimmed mean at 10% is closer to median
+median_fs # .72
+mean_fs # 78
+trimmed_mean_fs # 1.8188 at 10%
+# in order to compute weighted mean and median but for what???
+# could get population data > summarise by state, year, acres > join with population data >
+# then the populated a state is, the more weight I can give to an acre
+
+# claude code wrote in a csv with all state pop data from 2010-2025
+
+  
+# 2010-2020 data (drop 2020 here since the 2020s file has the more recent revision)
+url_1 <- "https://www2.census.gov/programs-surveys/popest/datasets/2010-2020/national/totals/nst-est2020-alldata.csv"
+pop_2010s <- read_csv(url_1) %>%
+  filter(STATE != "00") %>%
+  select(NAME, POPESTIMATE2010:POPESTIMATE2020) %>%
+  pivot_longer(cols = starts_with("POPESTIMATE"),
+               names_to = "year", names_prefix = "POPESTIMATE",
+               values_to = "population") %>%
+  filter(year != "2020")     # drop older-vintage 2020 estimate, keep the 2020s file's version instead
+
+# 2020-2025 data
+url_2 <- "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/state/totals/NST-EST2025-ALLDATA.csv"
+pop_2020s <- read_csv(url_2) %>%
+  filter(STATE != "00") %>%
+  select(NAME, POPESTIMATE2020:POPESTIMATE2025) %>%
+  pivot_longer(cols = starts_with("POPESTIMATE"),
+               names_to = "year", names_prefix = "POPESTIMATE",
+               values_to = "population")
+
+# combine, map full state names to abbreviations, fix DC/PR manually, format
+combined <- bind_rows(pop_2010s, pop_2020s) %>%
+  mutate(
+    state = state.abb[match(NAME, state.name)],
+    state = case_when(
+      NAME == "District of Columbia" ~ "DC",
+      NAME == "Puerto Rico" ~ "PR",
+      TRUE ~ state
+    ),
+    year = as.integer(year)
+  ) %>%
+  select(state, year, population) %>%
+  distinct(state, year, .keep_all = TRUE) %>%   # safety net against any remaining duplicate year rows
+  arrange(state, year)
+
+write_csv(combined, "data_processed/state_population_2010_2025.csv")
+
+state_pop_2010_2025 <- read_csv("data_processed/state_population_2010_2025.csv")
+
+# which states had the most fires?
+# which states had the most acres burned? 
+
+```
+
+```{r join with pop data 2010 to 2025}
+# group by fire year and state then summarise fire size
+Fires_2 <- 
+  Fires %>%
+  group_by(FIRE_YEAR, STATE) %>%
+  summarise("Fire_Size" = sum(FIRE_SIZE), .groups = "drop") %>%
+  filter(FIRE_YEAR >= 2010 & FIRE_YEAR <= 2025)
+# tidy pop data to join
+sp_2 <- 
+  state_pop_2010_2025 %>%
+  rename(
+    "STATE" = state,
+    "FIRE_YEAR" = year
+  )
+fires_pop <- left_join(Fires_2, sp_2, by = c("STATE", "FIRE_YEAR"))
+# filter out NAs
+fires_pop <- fires_pop %>%
+  filter(!is.na(Fire_Size), !is.na(population))
+# view(fires_pop)
+# now I can practice weighted mean. I'll give higher pop states more weight
+library(matrixStats)
+# weighted mean of total acres burned per state per year weighted by population
+weighted.mean(fires_pop[["Fire_Size"]], w = fires_pop[["population"]], na.rm = TRUE) # 236337.8
+weightedMedian(fires_pop[["Fire_Size"]], w = fires_pop[["population"]], na.rm = TRUE) # 22347.05
+# indicates there are outliers
+```
+
+# Estimates of Variability
+- look at variability of fire sizes from year to year in colorado from 2010-2025
+  - could compute median fire size each year
+  - could look at number of fires per year
+  - or could still look on national level...which states had most acres burned
+      - maybe weighting with pop was wrong and could have done square acres per state
+std deviation
+IQR (interquartile range) difference between 25th and 75th percentile
+MAD (median absolute deviation) more robust than standard deviation
+    
+```{r colorado}
+CO_1 <- 
+  Fires %>%
+    filter(STATE == "CO") %>%
+    group_by(FIRE_YEAR) %>%
+    summarise(
+      "acres_burned" = sum(FIRE_SIZE, na.rm = TRUE)
+    )
+sd(CO_1[["acres_burned"]])
+IQR(CO_1[["acres_burned"]])
+mad(CO_1[["acres_burned"]]) # scale of mad is adjusted to be on same scale as sd in R
+# view(CO_1)
+
+
+```
+
+# Exploring Data Distribution
