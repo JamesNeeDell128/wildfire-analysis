@@ -277,7 +277,41 @@ ggplot(Fires %>%
 # COULD ALSO CUT OUT 1990s MAYBE???
 # CAN YOU HAVE SOME LARGE FIRES AND TOTAL ACRES THAT YEAR IS STILL LOW?
   
-# frequency tables and histograms
+```
 
+```{r frequency table- fire sizes in CO}
+# frequency tables and histograms
+# how common are big fires, small fires, medium etc??
+# bin fire sizes
+CO <- Fires %>%
+  filter(STATE == "CO")
+breaks <- seq(
+   from = min(CO[["FIRE_SIZE"]]),
+   to = max(CO[["FIRE_SIZE"]]),
+   length = 30
+ )
+CO %>%
+  mutate(
+    FireSize = cut(FIRE_SIZE, breaks = breaks,  
+      right = TRUE, include.lowest = TRUE)) %>%
+  dplyr::count(FireSize, .drop = FALSE)
+
+# bin the lowest bin
+CO_2 <- CO %>%
+  filter(FIRE_SIZE <= 7200)
+breaks <- seq(
+   from = min(CO_2[["FIRE_SIZE"]]),
+   to = max(CO_2[["FIRE_SIZE"]]),
+   length = 10000
+ )
+CO_2 %>%
+  mutate(
+    FireSize = cut(FIRE_SIZE, breaks = breaks,  
+      right = TRUE, include.lowest = TRUE)) %>%
+  dplyr::count(FireSize, .drop = FALSE)
+# there are over 80,000 fires that are under .7 acres
+# those should probably get removed for some analysis
+# what is the lower bound of fires that should get removed?
+# LOOK AT FIRE_SIZE_CLASS
 ```
 
