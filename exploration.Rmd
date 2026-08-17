@@ -203,7 +203,7 @@ percentiles and quantiles
 boxplots(based on quantiles)
 frequency tables and histograms
 
-```{r data distribution}
+```{r quant table and boxplots}
 # get a quick quantile table
 CO_1 %>%
   pull(acres_burned) %>%
@@ -308,10 +308,106 @@ CO_2 %>%
   mutate(
     FireSize = cut(FIRE_SIZE, breaks = breaks,  
       right = TRUE, include.lowest = TRUE)) %>%
-  dplyr::count(FireSize, .drop = FALSE)
+  dplyr::count(FireSize, .drop = FALSE) # .drop = FALSE includes the empty bins
 # there are over 80,000 fires that are under .7 acres
 # those should probably get removed for some analysis
 # what is the lower bound of fires that should get removed?
-# LOOK AT FIRE_SIZE_CLASS
+# LOOK AT FIRE_SIZE_CLASS data is already binned. Interesting
 ```
+Almost all fires recored are very small. There is also FIRE_SIZE_CLASS
+variable which is a manual binning of fire sizes
+
+## Histograms
+- Empty bins are included in the graph.
+- Bins are of equal width.
+- The number of bins (or, equivalently, bin size) is up to the user.
+- Bars are contiguous—no empty space shows between bars, unless there is an empty bin.
+
+```{r histograms and density plots}
+# histogram of fire size class counts
+# ggplot(CO %>%
+#          filter(FIRE_SIZE_CLASS != "A" & FIRE_SIZE_CLASS != "B" & FIRE_SIZE_CLASS != "C" & FIRE_SIZE_CLASS != "D", FIRE_SIZE_CLASS != "G"), aes(x = FIRE_SIZE)) +
+#   geom_histogram(bins = 10)
+# WON'T WORK DUE TO OUTLIERS so I cut off some classes. not telling me much here
+# except 1) this is from 1992 - 2024 so 2) you can see that large fires are relatively rare
+
+# I want to look at day of the year that fires start > can do hist and density of this 
+# instead. makes much more sense. could even facet years etc. DISCOVERY_DOY
+# could break days to 12, or could put month col in using case_when and grepl
+# can also look at total fires across the years, then could facet western states
+# would be a better line graph
+ggplot(CO, aes(x = DISCOVERY_DOY)) +
+  geom_histogram(fill = "darkorange3", bins = 50) +
+  scale_x_continuous(
+    breaks = c(0, 50, 100, 150, 200, 250, 300, 350)
+  ) +
+  scale_y_continuous(
+    breaks = c(1000, 2000, 3000, 4000, 5000)
+  ) +
+  labs(
+    x = "Discovery Day of Year",
+    y = "Total Fires",
+    title = "Distribution of Total Fires in Colorado each Day of the Year",
+    subtitle = "Combined Data from 1992 to 2024",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+    ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(color = "gray40", size = 11),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0),
+    panel.grid.minor = element_blank()
+    )
+
+
+# density plot which corresponds to plotting the histogram as a proportion rather than count
+ggplot(CO, aes(x = DISCOVERY_DOY)) +
+  geom_histogram(aes(y = after_stat(density)), fill = "darkorange3", bins = 50) + # tranform y values into density
+  geom_density() + # layer density geom on top
+  scale_x_continuous(
+    breaks = c("Jan" = 0, "Feb" = 30, "Mar" = 60, "Apr" = 90, "May" = 120, "Jun" = 150, "Jul" = 180, "Aug" = 210, "Sep" = 240, "Oct" = 270, "Nov" = 300, "Dec" = 330)
+  ) +
+  labs(
+    x = "Fire Discovery Date",
+    y = "Fire Density",
+    title = "Density Distribution of Total Fires in Colorado each Day of the Year",
+    subtitle = "Combined Data from 1992 to 2024",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+    ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, margin = margin(b = 8)),
+    plot.subtitle = element_text(color = "gray40", size = 11, margin = margin(b = 12)),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0, margin = margin(t = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    panel.grid.minor = element_blank()
+    )
+# total area under the density curve = 1 so you can estimate probabilities 
+# by calculating area under the curve between 2 points on the x axis
+```
+# Exploring Binary and Categorical Data
+mode is most commonly occuring category or value in a dataset
+
+```{r bar chart}
+# could do year FIRE_SIZE_CLASS
+# or could look at general causes of fires in CO
+library(forcats)
+CO %>%
+  select(NWCG_GENERAL_CAUSE, FIRE_SIZE_CLASS) %>%
+  ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) +
+  geom_bar(aes(fill = FIRE_SIZE_CLASS)) +
+  labs(
+    y = "Cause",
+    x = "Count",
+    title = "Causes of Fires in Colorado from 1992-2024",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  )
+# can see most fires are natural and most are small
+# small fires do make the data hard to visualize
+# could look at cause by year. see if trends are changing etc
+
+```
+
+
 
