@@ -213,15 +213,71 @@ CO_1 %>%
 # median is 46334.76 acres burned
 
 # boxplot
+
 # looking at fire size and acres from 1992 - 2024. can always come back and make this look good
 # can clearly see that 2020 and 2002 had some of the biggest fires on record followed by 2018 then 2012
-ggplot(Fires %>%
-         filter(STATE == "CO"), aes(y = factor(FIRE_YEAR), x = FIRE_SIZE)) +
-  geom_boxplot(staplewidth = 0.25) +  
+# ggplot(Fires %>%
+#          filter(STATE == "CO"), aes(y = factor(FIRE_YEAR), x = FIRE_SIZE)) + # in order to bin FIRE_YEAR(an integer)
+#   # I needed to factor it
+#   geom_boxplot(staplewidth = 0.25) +
+#   labs(
+#     y = NULL,
+#     x = "Fire Size (acres)"
+#   )
+# professionalized with Claude
+ggplot(Fires %>% filter(STATE == "CO"),
+       aes(y = factor(FIRE_YEAR), x = FIRE_SIZE)) +
+  geom_boxplot(staplewidth = 0.25, fill = "#D9822B", color = "#4A4A4A", 
+               outlier.alpha = 0.7, outlier.size = 1.5, outlier.color = "#8B3A1F") +
+  scale_x_continuous(labels = scales::comma) +
   labs(
+    title = "Wildfire Size by Year in Colorado",
+    subtitle = "Distribution of individual fire sizes, 1992–2024",
+    x = "Fire Size (acres)",
     y = NULL,
-    x = "Fire Size (acres)"
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(color = "gray40", size = 11),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0),
+    axis.text.y = element_text(size = 8, face = "bold"),
+    panel.grid.minor = element_blank()
   )
+# could do a facet wrap and look at western states
+western_states <- c("WA", "OR", "CA", "NV", "ID", "MT", "WY", "UT", "CO", "AZ", "NM")
+ggplot(Fires %>%
+         filter(STATE %in% western_states),
+       aes(y = factor(FIRE_YEAR), x = FIRE_SIZE)) +
+  geom_boxplot(staplewidth = 0.25, fill = "#D9822B", color = "#4A4A4A", 
+               outlier.alpha = 0.7, outlier.size = 1.5, outlier.color = "#8B3A1F") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Wildfire Size by Year",
+    subtitle = "Distribution of individual fire sizes, 1992–2024",
+    x = "Fire Size (acres)",
+    y = NULL,
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    plot.subtitle = element_text(color = "gray40", size = 11),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0),
+    axis.text.y = element_text(size = 7, face = "bold"),
+    panel.grid.minor = element_blank()
+  ) +
+  facet_wrap(~ STATE, scales = "free")
+#  a binned scatterplot may be better here but this gives a general idea on how big fires get in each state
+
+# DOES LARGEST FIRE OF THE YEAR CORRELATE WITH TOTAL ACRES BURNED?
+# HOW DO I LOOK AT LARGE FIRES AND HOW THEY PLAY INTO BAD FIRE YEARS?
+# COULD LOOK AT TOTAL ACRE BAR CHARTS SIDE BY SIDE
+# COULD ALSO CUT OUT 1990s MAYBE???
+# CAN YOU HAVE SOME LARGE FIRES AND TOTAL ACRES THAT YEAR IS STILL LOW?
+  
+# frequency tables and histograms
 
 ```
 
