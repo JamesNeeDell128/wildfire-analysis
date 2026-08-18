@@ -1,0 +1,77 @@
+Notes/questions etc
+what is the probability that a fire(could specify size) will happen on a given day?
+  use area under curve of density distribution plot
+what cause creates the biggest fires?
+  Cause vs Total Fire size
+  how to graph??
+  
+biggest causes
+riskiest places densest places
+controlled burns?? how do they fit in? Would not be a "wild"fire
+ 
+* I can see now that all of the small fires make the data hard to visualize.
+  what importance do they have?
+  do many small fires indicate a high fire season? 
+
+* defining what a "high fire season is"
+  total acres burned
+  is 1000 acres burned in may then none in june as detrimental
+  as 1000 acres burned in may and june
+  does length of time of fires burning play a factor
+    fires burning longer have potential to impact air quality longer
+    cost more to fight. is there a cost per day per acre?
+    how does geography play into cost?
+  length to containment is important
+  
+  Should add Alaska to western states lookup table
+  
+* conversation with Claude about why sampling error is hard to pin down
+  
+So if I am only concerned with fires from 1992-2024 then sampling error is hard to pin down
+
+Right — and it's worth being precise about why it's hard to pin down, because there are actually two 
+subtly different situations depending on how you frame your question.
+
+Situation 1 — if your population of interest is literally "all fires that occurred in Colorado 
+from 1992-2024" (a fixed, closed, historical period): then your dataset isn't a sample at all in the 
+traditional sense — it's close to a census (an attempt at counting the whole population), not a sample 
+drawn from a larger pool. In this framing, sampling error in the classic sense barely applies, since you're 
+not trying to generalize from a subset to a larger group you didn't observe — you're trying to describe the 
+group you did observe, completely. Any remaining "error" here isn't sampling error at all — it's the 
+measurement/recording error we just talked about (missing containment dates, underreporting, etc.), which 
+confidence intervals can't capture regardless.
+
+Situation 2 — if your actual goal is inferring something broader, like "what does this tell us about 
+future fire behavior in Colorado" or "what's the underlying fire-generating process in this region, of 
+which 1992-2024 is just one 32-year realization" — then you are sampling, but from a genuinely unusual, 
+ill-defined population: not a fixed group of individuals, but a stochastic process unfolding over 
+time (climate, weather, fuel, ignition sources — all evolving, not static). In this framing, sampling 
+error genuinely does apply, but N
+N (the "total population") isn't a fixed countable number the way "300 million Americans" is — it's 
+more like "however many fire-years could theoretically have occurred under climate/ecological conditions 
+similar to this period," which is a much fuzzier, philosophically trickier quantity to pin down. This is 
+exactly why the finite population correction formula doesn't cleanly apply here — it assumes a well-defined, 
+countable 
+N
+N, and "all possible fire seasons under roughly current climate conditions" isn't one.
+
+Practically, for your project, this distinction matters for how you frame your conclusions:
+
+If you're just describing what happened in Colorado 1992-2024 (e.g. "average fire duration was X days, 
+biggest fires clustered in these years"), you're in Situation 1 — you can state these as facts about the 
+observed record, with the caveat being data-quality limitations, not sampling uncertainty.
+If you're trying to predict or generalize (e.g. "Colorado fires are getting longer, this trend will likely 
+continue," or "these findings suggest something about wildfire risk going forward"), you're implicitly in 
+Situation 2 — and any confidence interval or trend line you present should be framed with real humility, 
+since you're extrapolating from one historical run of a complex, changing system, not drawing a clean 
+statistical sample from a stable population.
+This is a genuinely sophisticated point to be thinking about, and it's worth stating explicitly in your 
+write-up rather than glossing over — most intro-level analyses just slap a confidence interval on things 
+without acknowledging which of these two framings they're actually operating in.
+
+
+
+
+
+
+
