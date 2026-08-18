@@ -49,3 +49,23 @@ print(x)
 # logbase a (b) = x
 # %%
 # experiment with exponent and log graphs
+x = symbols('x')
+f = log(x)
+plot(f) # x = e**f # e = ~2.718
+# %%
+f = 2**x
+plot(f)
+# %%
+for i in range(1,6):
+    f = x**i
+    print("f(x) = x **",i)
+    plot(f)
+# %%
+
+x = symbols('x')
+for i in range(2, 6): # logbase 1 is undefined because there are infinite solutions
+    f = log(x, i)
+    print("f(x) = log base:", i, "(x)") # x = i**y
+    plot(f)
+
+# %%
