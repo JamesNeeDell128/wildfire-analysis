@@ -563,8 +563,44 @@ state_cor_matrix
 corrplot(state_cor_matrix, method = "color", type = "upper",
          addCoef.col = "black", tl.col = "black", diag = FALSE)
 ```
+# Multivariant Analysis
+appropriate type of bivariant or multivariant analysis depends on nature of data:
+numeric or categorical
+Hexagonal Binning and Contours (numeric vs numeric, use when there are many datapoints when scatter plot is too dense)
+Contingency table
+  - table of counts by category
 
-```{r}
+```{r hexplot}
+CO_4 <- CO %>%
+  mutate(fire_duration = as.double((((CONT_DATE - DISCOVERY_DATE) / 60) / 60) / 24))
+ggplot(CO_4 %>%
+         filter(FIRE_SIZE_CLASS != "A", FIRE_SIZE_CLASS != "B", FIRE_SIZE_CLASS != "C", fire_duration >= 2, FIRE_YEAR >= 2010), aes(x = fire_duration, y = FIRE_SIZE)) +
+ geom_hex(color = "white") +
+  scale_fill_gradient(low = "blue", high = "black") +
+  facet_wrap(~FIRE_YEAR)
+
+
+  
+```
+
+```{r contingency table}
+# comparing 2 categorical variables
+# cause and class
+# library(gmodels)
+# ct <- CrossTable(Fires$FIRE_SIZE_CLASS, Fires$NWCG_GENERAL_CAUSE,
+#                  prop.c = FALSE, prop.chisq = FALSE, prop.t = FALSE)
+# contingency table
+Fires %>%
+  dplyr::count(FIRE_SIZE_CLASS, NWCG_GENERAL_CAUSE) %>%
+  group_by(FIRE_SIZE_CLASS) %>%
+  mutate(pct = round(100 * n / sum(n), 1)) %>%
+  ungroup() %>%
+  mutate(cell = paste0(n, " (", pct, "%)")) %>%
+  select(-n, -pct) %>%
+  pivot_wider(names_from = NWCG_GENERAL_CAUSE, values_from = cell, values_fill = "0 (0%)")
+# for cat vs numeriacal look at duration vs agency
+
+
 
 ```
 
