@@ -494,7 +494,7 @@ corrplot(cor(CO_3), method = "color")
 
 
 
-```{r scatter plots}
+```{r scatter plots and more cor plots}
 r_value <- cor(CO_3$FIRE_YEAR, CO_3$count)
 ggplot(CO_3, aes(x = FIRE_YEAR, y = count)) +
   geom_point(color = "darkorange3") +
@@ -549,6 +549,19 @@ ggplot(fires_by_state_year, aes(x = FIRE_YEAR, y = count)) +
     panel.grid.minor = element_blank()
     )
 
+# now inspect correlation matrix and corrplot between states
+
+fires_wide <- fires_by_state_year %>%
+  select(STATE, FIRE_YEAR, count) %>%
+  pivot_wider(names_from = STATE, values_from = count)
+
+state_cor_matrix <- fires_wide %>%
+  select(-FIRE_YEAR) %>%
+  cor(use = "complete.obs")
+state_cor_matrix
+
+corrplot(state_cor_matrix, method = "color", type = "upper",
+         addCoef.col = "black", tl.col = "black", diag = FALSE)
 ```
 
 ```{r}
