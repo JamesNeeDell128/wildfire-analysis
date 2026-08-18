@@ -655,6 +655,27 @@ ggplot(Fires_3_labeled %>%
     panel.spacing = unit(1, "lines")
   ) 
   ggsave("outputs/fire_duration_2020_FG.png", width = 8, height = 6, dpi = 300) # saves most recent file to outputs as png
+# rain, wind, weather could influence this along with many other factors
+
+# another option is a violin plot - can show nuances in distribution that aren't perceptable in boxplot
+# density boxplot basicallly
 
 ```
+# SUMMARY
 
+Exploratory data analysis (EDA), pioneered by John Tukey, set a foundation for the field of data science.
+The key idea of EDA is that the first and most important step in any project based on data is to look at the data.
+By summarizing and visualizing the data, you can gain valuable intuition and  understanding of the project.
+
+This chapter has reviewed concepts ranging from simple metrics, such as estimates of location and variability, to rich visual displays that explore the relationships between multiple variables, as in Figure 1-12.
+The diverse set of tools and techniques being developed by the open source community, combined with the expressiveness of the R and Python languages, has created a plethora of ways to explore and analyze data.
+Exploratory analysis should be a cornerstone of any data science project.
+
+In this chapter, we demonstrated how LLMs can be used to improve or create data dictionaries as well as to help interpret and improve visualizations.
+
+
+Excerpt From
+AI-Assisted Statistics for Data Scientists
+Peter Bruce, Andrew Bruce & Peter Gedeck
+https://books.apple.com/us/book/ai-assisted-statistics-for-data-scientists/id6781040434
+This material may be protected by copyright.
