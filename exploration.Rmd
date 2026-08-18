@@ -604,3 +604,57 @@ Fires %>%
 
 ```
 
+```{r more boxplots}
+Fires_3 <- Fires %>%
+  filter(STATE %in% western_states, !is.na(CONT_DATE), FIRE_YEAR == 2020) %>% # for many small fires cont date not input and have to focus on one year because fire fighting methods have improved over time
+  mutate(STATE = factor(STATE)) %>%
+  mutate(fire_duration = as.double((((CONT_DATE - DISCOVERY_DATE) / 60) / 60) / 24))
+# Fires_3
+ggplot(Fires_3, aes(x = STATE, y = fire_duration)) + 
+  geom_boxplot() + 
+  facet_wrap(~FIRE_SIZE_CLASS, labeller = as_labeller(fire_size_lookup)) 
+# looking at these graphs I need to see counts to better understand data
+# vibe coding with claude to get n on x axis
+counts_per_panel <- Fires_3 %>%
+  filter(!is.na(fire_duration)) %>%
+  dplyr::count(STATE, FIRE_SIZE_CLASS)
+
+Fires_3_labeled <- Fires_3 %>%
+  left_join(counts_per_panel, by = c("STATE", "FIRE_SIZE_CLASS")) %>%
+  mutate(state_label = paste0(STATE, "\n(n=", n, ")"))
+
+ggplot(Fires_3_labeled, aes(x = state_label, y = fire_duration)) + 
+  geom_boxplot() + 
+  facet_wrap(~FIRE_SIZE_CLASS, labeller = as_labeller(fire_size_lookup), scales = "free_x") +
+  labs(x = "State") +
+  theme(axis.text.x = element_text(size = 7, angle = 45, hjust = 1))  
+
+# now focus on 2 largest class sizes
+ggplot(Fires_3_labeled %>%
+         filter(FIRE_SIZE_CLASS == "F" | FIRE_SIZE_CLASS == "G"), aes(x = state_label, y = fire_duration)) + 
+  geom_boxplot(fill = "#D9822B", color = "#4A4A4A", 
+               outlier.alpha = 0.6, outlier.size = 1.2, outlier.color = "#8B3A1F", staplewidth = .25) +
+  facet_wrap(~FIRE_SIZE_CLASS, labeller = as_labeller(fire_size_lookup), scales = "free_x") +
+  labs(
+    title = "Duration of the Largest Wildfires by Western US States",
+    subtitle = "2020 — fire size classes F and G",
+    x = "State",
+    y = "Duration (days)",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, margin = margin(b = 4)),
+    plot.subtitle = element_text(color = "gray40", size = 11, margin = margin(b = 12)),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0, margin = margin(t = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.text.x = element_text(size = 7, angle = 45, hjust = 1),
+    strip.text = element_text(size = 9, face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.spacing = unit(1, "lines")
+  ) 
+  ggsave("outputs/fire_duration_2020_FG.png", width = 8, height = 6, dpi = 300) # saves most recent file to outputs as png
+
+```
+
