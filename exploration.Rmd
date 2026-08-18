@@ -8,6 +8,7 @@ output: pdf_document
 ```{r read_in}
 # check layers
 library(sf)
+# data source URL: https://www.fs.usda.gov/rds/archive/catalog/RDS-2013-0009.7
 gdb_path <- "RDS-2013-0009.7_Data_Format2_GDB/Data/FPA_FOD_20260615.gdb"
 st_layers(gdb_path)
 # read in dataset as fires. simple features(sf) and st_read() allows for gbd file to be recognized
