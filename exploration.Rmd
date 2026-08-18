@@ -468,7 +468,7 @@ CO_numeric <- CO %>%
   select(fire_duration, FIRE_SIZE, FIRE_YEAR) %>% # select numeric variables to compare correlation
   drop_na()
 
-cor_matrix <- cor(CO_numeric, use = "complete.obs", method = "spearman") # spearman for outliers 
+cor_matrix <- cor(CO_numeric, use = "complete.obs", method = "spearman") # spearman based on rank of data so estimate is robust to outliers
 cor_matrix
 
 corrplot(cor_matrix, method = "color")
@@ -494,7 +494,60 @@ corrplot(cor(CO_3), method = "color")
 
 
 
-```{r}
+```{r scatter plots}
+r_value <- cor(CO_3$FIRE_YEAR, CO_3$count)
+ggplot(CO_3, aes(x = FIRE_YEAR, y = count)) +
+  geom_point(color = "darkorange3") +
+  geom_smooth(color = "darkgrey") +
+  scale_x_continuous(
+    breaks = c(1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, 2024)
+  ) +
+  labs(
+    x = NULL,
+    y = "Total Fire Count",
+    title = "Total Fire Count in Colorado from 1992 to 2024",
+    subtitle = paste0("r = ", round(r_value, 3)),
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+    ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, margin = margin(b = 8)),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0, margin = margin(t = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    panel.grid.minor = element_blank()
+    )
+
+# now I could facet western states here. easy but computing R for each is trickier
+
+western_states <- c("WA", "OR", "CA", "NV", "ID", "MT", "WY", "UT", "CO", "AZ", "NM")
+
+fires_by_state_year <- Fires %>%
+  filter(STATE %in% western_states) %>%
+  group_by(STATE, FIRE_YEAR) %>%
+  summarise(count = n(), .groups = "drop")
+
+ggplot(fires_by_state_year, aes(x = FIRE_YEAR, y = count)) +
+  geom_point(color = "darkorange3") +
+  geom_smooth(color = "darkgrey") +
+  facet_wrap(~ STATE, scales = "free_y") + # allows for different scales
+  scale_x_continuous(
+    breaks = c(1992, 2000, 2008, 2016, 2024)
+  ) +
+  labs(
+    x = NULL,
+    y = "Total Fire Count",
+    title = "Total Fire Count by Year, Western States",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+    ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, margin = margin(b = 8)),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0, margin = margin(t = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    panel.grid.minor = element_blank()
+    )
 
 ```
 
