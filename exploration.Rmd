@@ -365,7 +365,7 @@ ggplot(CO, aes(x = DISCOVERY_DOY)) +
   geom_histogram(aes(y = after_stat(density)), fill = "darkorange3", bins = 50) + # tranform y values into density
   geom_density() + # layer density geom on top
   scale_x_continuous(
-    breaks = c("Jan" = 0, "Feb" = 30, "Mar" = 60, "Apr" = 90, "May" = 120, "Jun" = 150, "Jul" = 180, "Aug" = 210, "Sep" = 240, "Oct" = 270, "Nov" = 300, "Dec" = 330)
+    breaks = c("Jan" = 0, "Feb" = 30, "Mar" = 60, "Apr" = 90, "May" = 120, "Jun" = 150, "Jul" = 180, "Aug" = 210, "Sep" = 240, "Oct" = 270, "Nov" = 300, "Dec" = 330) # obviously not best practice but quick
   ) +
   labs(
     x = "Fire Discovery Date",
@@ -392,22 +392,113 @@ mode is most commonly occuring category or value in a dataset
 ```{r bar chart}
 # could do year FIRE_SIZE_CLASS
 # or could look at general causes of fires in CO
+# lookup table for fire size class
+fire_size_lookup <- c(
+  A = "0-0.25 acres",
+  B = "0.26-9.9 acres",
+  C = "10.0-99.9 acres",
+  D = "100-299 acres",
+  E = "300-999 acres",
+  F = "1000-4999 acres",
+  G = "5000+ acres"
+)
 library(forcats)
 CO %>%
   select(NWCG_GENERAL_CAUSE, FIRE_SIZE_CLASS) %>%
+  filter(FIRE_SIZE_CLASS != "A") %>%
   ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) + # factoring cat var then ordering
   geom_bar(aes(fill = FIRE_SIZE_CLASS)) +
+  scale_fill_discrete(
+    name = "Fire Size",
+    labels = fire_size_lookup # change legend labels using lookup table created earlier
+    ) +
   labs(
     y = "Cause",
     x = "Count",
     title = "Causes of Fires in Colorado from 1992-2024",
     caption = "Source: USDA Forest Service FPA_FOD dataset"
   )
-# can see most fires are natural and most are small
+# can see most fires are natural (mode is natural for cause) and most are small(mode is A for size)
 # small fires do make the data hard to visualize
 # could look at cause by year. see if trends are changing etc
 
+CO %>%
+  select(NWCG_GENERAL_CAUSE, FIRE_SIZE_CLASS, FIRE_YEAR) %>%
+  filter(FIRE_YEAR >= 2015) %>%
+  ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) + # factoring cat var then ordering
+  geom_bar(aes(fill = FIRE_SIZE_CLASS)) +
+  scale_fill_discrete(
+    name = "Fire Size",
+    labels = fire_size_lookup # change legend labels using lookup table created earlier
+    ) +
+  labs(
+    y = "Cause",
+    x = "Count",
+    title = "Causes of Fires in Colorado from 1992-2024",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  ) +
+  facet_wrap(~FIRE_YEAR)
+# should I look ay cause vs total fire size?
+
+```
+# Expected Value
+really a form of weighted mean. It adds the ideas of future expectations and 
+probability weights often based on subjective judgement. sum of values * their
+probability of occurence
+
+# Probability
+the probability that an event will happen is the proportion of times it will occur if the situation could be repeated over and over, countless times
+
+# Correlation Coefficient
+gives an estimate of the correlation of two variables that always lies on the same scale
+-1 perfect neg correlation, +1 perfect pos correlation, 0 no correlation
+correlation table displays relationship between multiple variables but variables can still have a non-linear
+relationship and have near 0 correlation coefficient
+
+A dot B / norm A * norm B
+really just calculting angle between 2 vectors
+if correlation coefficient is 1 or -1 then the 2 vectors are linearly dependent
+
+```{r correlation table}
+library("corrplot")
+# fire_size_class with fire size length(which I have to create)
+
+CO_numeric <- CO %>%
+  mutate(fire_duration = as.double((((CONT_DATE - DISCOVERY_DATE) / 60) / 60) / 24)) %>%
+  select(fire_duration, FIRE_SIZE, FIRE_YEAR) %>% # select numeric variables to compare correlation
+  drop_na()
+
+cor_matrix <- cor(CO_numeric, use = "complete.obs", method = "spearman") # spearman for outliers 
+cor_matrix
+
+corrplot(cor_matrix, method = "color")
+
+# could look at fire counts for western states and correlate those
+# how to do fire counts
+# each row is a fire?
+CO_3 <- CO %>%
+  group_by(FIRE_YEAR) %>%
+  summarise(
+    count = n(),
+    total_size = sum(FIRE_SIZE, na.rm = TRUE)
+    )
+cor(CO_3)
+corrplot(cor(CO_3), method = "color")
+```
+1) positive correlation between fire size and fire duration (.365) which is expected. Larger fires should take longer to put out.
+2) negative correlation bewteen fire year and fire duration. this makes sense if fire fighting technology has improved over time.
+3) negative correlation between fire size and fire year. again makes sense if fire fighting tech has improved over time. better detection, better containment methods. more efficient etc.
+4) Fire count has a positive correlation over time and this may indicate that total number of fires per year have increased since 1992.
+5) total size has a positive correlation over time which may indicate that while fires have overall been smaller total area burned has been greater and this maps with count increasing over time
+
+
+
+
+```{r}
+
 ```
 
+```{r}
 
+```
 
