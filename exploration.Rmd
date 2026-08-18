@@ -371,7 +371,7 @@ ggplot(CO, aes(x = DISCOVERY_DOY)) +
   labs(
     x = "Fire Discovery Date",
     y = "Fire Density",
-    title = "Density Distribution of Total Fires in Colorado each Day of the Year",
+    title = "Density Distribution of Total Wildfires in Colorado each Day of the Year",
     subtitle = "Combined Data from 1992 to 2024",
     caption = "Source: USDA Forest Service FPA_FOD dataset"
     ) +
@@ -384,6 +384,7 @@ ggplot(CO, aes(x = DISCOVERY_DOY)) +
     axis.title.y = element_text(margin = margin(r = 10)),
     panel.grid.minor = element_blank()
     )
+ggsave("outputs/CO_daily_density_dist.png", width = 8, height = 6, dpi = 300)
 # total area under the density curve = 1 so you can estimate probabilities 
 # by calculating area under the curve between 2 points on the x axis
 ```
@@ -440,6 +441,35 @@ CO %>%
   ) +
   facet_wrap(~FIRE_YEAR)
 # should I look ay cause vs total fire size?
+# look at large fires
+CO %>%
+  select(NWCG_GENERAL_CAUSE, FIRE_SIZE_CLASS, FIRE_YEAR) %>%
+  filter(FIRE_YEAR >= 2015, FIRE_SIZE_CLASS == "F" | FIRE_SIZE_CLASS == "G") %>%
+  ggplot(aes(y = fct_rev(fct_infreq(NWCG_GENERAL_CAUSE)))) + # factoring cat var then ordering
+  geom_bar(aes(fill = FIRE_SIZE_CLASS)) +
+  scale_fill_discrete(
+    name = "Fire Size",
+    labels = fire_size_lookup # change legend labels using lookup table created earlier
+    ) +
+  labs(
+    y = "Cause",
+    x = "Count",
+    title = "Causes of Large Wildfires in Colorado",
+    subtitle = "Includes Wildfires from 1992-1994 of Class F and G",
+    caption = "Source: USDA Forest Service FPA_FOD dataset"
+  ) +
+   theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, margin = margin(b = 8)),
+    plot.subtitle = element_text(color = "gray40", size = 11),
+    plot.caption = element_text(color = "gray50", size = 8, hjust = 0, margin = margin(t = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+    )
+  
+ggsave("outputs/CO_wildfire_causes_FG.png", width = 8, height = 6, dpi = 300)
 
 ```
 # Expected Value
