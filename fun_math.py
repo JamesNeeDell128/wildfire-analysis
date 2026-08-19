@@ -172,4 +172,53 @@ print(dz_dx_chain) # take the deriv of each, multiply then sub
 print(dz_dx_no_chain) # sub then take deriv
 
 # %%
+# integrals - opposite of derivative - finds area under curve for given range
+# approximating an integral
+# a = min of x range
+# b = max of range
+# n = number of rectangles
+# f = function = x**2 + 1
 
+def approx_integral(a, b, n, f):
+    delta_x = (b - a) / n # width of rectangle
+    sum_area = 0
+    for i in range(1, n + 1):
+        # midpoint = b - ((delta_x * i) - .5 * (delta_x)) # to plug into f(x), get right most point then move left .5 width
+        midpoint = a + ((delta_x * i) - .5 * (delta_x)) # both work
+        area = delta_x * f.subs(x, midpoint) # width * height
+        sum_area += area
+    return sum_area
+
+approx_integral(0, 1, 10000,  (x**2 + 1))
+
+# %%
+# more exact integration with sympy
+x = symbols('x')
+f = x**2 + 1
+area = integrate(f, (x, 0, 1)) # integrate f with respect to x between x = 0 and x = 1
+print(area) # fraction  
+print(float(area)) # decimal
+# %%
+# using limits to calculate integrals
+# Declare variables to SymPy
+x, i, n = symbols('x i n')
+# Declare function and range
+f = x**2 + 1
+lower, upper = 0, 1
+# Calculate width and each rectangle height at index "i"
+delta_x = ((upper - lower) / n)
+x_i = (lower + delta_x * i)
+fx_i = f.subs(x, x_i)
+# Iterate all "n" rectangles and sum their areas
+n_rectangles = Sum(delta_x * fx_i, (i, 1, n)).doit()
+# Calculate the area by approaching the number
+# of rectangles "n" to infinity
+area = limit(n_rectangles, n, oo)
+print(area) # prints 4/3
+# %%
+# what is the area under the curve of 3x**2 + 1 between 0 and 1
+x = symbols('x')
+f = 3*x**2 + 1
+area = integrate(f, (x, 0, 2))
+print(area)
+# %%
