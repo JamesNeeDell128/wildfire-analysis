@@ -222,3 +222,38 @@ f = 3*x**2 + 1
 area = integrate(f, (x, 0, 2))
 print(area)
 # %%
+# approximating square root with guess and check
+# use epsilon: given x we want to find r such that |r**2 -x| < epsilon
+# start with a guess known to be too small > g
+# increment by a small value > a to give a new guess g
+# check if g**2 is within epsilon
+# continue until satisfied
+
+# set 2 parameters
+# epsilon and increment
+# performance will vary in speed and accuracy
+
+x = 54321
+epsilon = .01
+num_guesses = 0
+guess = 0.0
+increment = .001
+
+# this works too and way better for some reason
+
+while epsilon >= .01:
+    num_guesses += 1
+    epsilon = x - guess**2
+    guess += increment
+print(guess)
+print(num_guesses)
+
+# can fail if increment is too big
+
+# while abs(guess**2 - x) >= epsilon and guess**2 <= x:
+#     guess += increment
+#     num_guesses += 1
+# print(guess)
+# print(num_guesses)
+    
+# %%
