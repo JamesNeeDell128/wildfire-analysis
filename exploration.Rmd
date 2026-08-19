@@ -621,7 +621,7 @@ ggplot(CO_4 %>%
 # ct <- CrossTable(Fires$FIRE_SIZE_CLASS, Fires$NWCG_GENERAL_CAUSE,
 #                  prop.c = FALSE, prop.chisq = FALSE, prop.t = FALSE)
 # contingency table
-Fires %>%
+cont_tibble <- Fires %>%
   dplyr::count(FIRE_SIZE_CLASS, NWCG_GENERAL_CAUSE) %>%
   group_by(FIRE_SIZE_CLASS) %>%
   mutate(pct = round(100 * n / sum(n), 1)) %>%
@@ -629,6 +629,8 @@ Fires %>%
   mutate(cell = paste0(n, " (", pct, "%)")) %>%
   select(-n, -pct) %>%
   pivot_wider(names_from = NWCG_GENERAL_CAUSE, values_from = cell, values_fill = "0 (0%)")
+
+write_csv(cont_tibble, "outputs/class_cause_contingency.csv")
 # for cat vs numeriacal look at duration vs agency
 
 
