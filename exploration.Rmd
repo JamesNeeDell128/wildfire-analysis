@@ -580,6 +580,7 @@ ggplot(fires_by_state_year, aes(x = FIRE_YEAR, y = count)) +
     panel.grid.minor = element_blank()
     )
 ggsave("outputs/wildfire_total_year_state.png", width = 8, height = 6, dpi = 300)
+
 # now inspect correlation matrix and corrplot between states
 
 fires_wide <- fires_by_state_year %>%
@@ -699,6 +700,49 @@ ggplot(Fires_3_labeled %>%
 # density boxplot basicallly
 
 ```
+
+Are fires getting bigger over time in colorado, western states?
+
+```{r fire size over time}
+ggplot(Fires %>% filter(FIRE_SIZE > 0, STATE == "CO"), aes(x = factor(FIRE_YEAR), y = FIRE_SIZE)) +
+  geom_violin(fill = "#D9822B", color = "#4A4A4A") +
+  scale_y_log10(breaks = c(0.1, 1, 10, 100, 1000, 10000, 100000), labels = scales::comma) +
+  labs(x = "Year", y = "Fire Size (acres, log scale)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# violin not useful
+# plotting summary statistics over time
+Fires %>%
+  filter(FIRE_SIZE > 0, STATE == "CO") %>%
+  group_by(FIRE_YEAR) %>%
+  summarise(
+    median_size = median(FIRE_SIZE, na.rm = TRUE),
+    mean_size = mean(FIRE_SIZE, na.rm = TRUE),
+    p90 = quantile(FIRE_SIZE, 0.9, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = FIRE_YEAR)) +
+  geom_line(aes(y = median_size, color = "Median")) +
+  geom_line(aes(y = mean_size, color = "Mean")) +
+  geom_line(aes(y = p90, color = "90th percentile")) +
+  scale_y_log10(labels = scales::comma) +
+  labs(x = "Year", y = "Fire Size (acres, log scale)", color = "Statistic")
+
+# median is wonky. reporting or something. too in the weeds for right now
+# perhaps other ways to answer this question
+
+```
+```{r questionable}
+Fires %>%
+  group_by(FIRE_YEAR) %>%
+  summarise(
+    n = dplyr::n(),
+    pct_under_1_acre = mean(FIRE_SIZE < 1, na.rm = TRUE),
+    pct_under_point25 = mean(FIRE_SIZE <= 0.25, na.rm = TRUE)
+  )
+# ????
+```
+
+
+
 # SUMMARY
 
 Exploratory data analysis (EDA), pioneered by John Tukey, set a foundation for the field of data science.
