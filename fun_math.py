@@ -237,9 +237,9 @@ x = 54321
 epsilon = .01
 num_guesses = 0
 guess = 0.0
-increment = .001
+increment = 1
 
-# this works too and way better for some reason
+# this works too and way better for some reason. why???
 
 while epsilon >= .01:
     num_guesses += 1
@@ -254,6 +254,41 @@ print(num_guesses)
 #     guess += increment
 #     num_guesses += 1
 # print(guess)
-# print(num_guesses)
-    
+# print(num_guesses) 
+# %%
+# bisection search
+x = 54321
+epsilon = .01
+num_guesses = 0
+guess = x / 2
+
+
+
+# while abs(x - guess**2) >= epsilon:
+#     num_guesses += 1
+#     if guess**2 > x:
+#         guess -= .5 * guess
+#     else:
+#         guess += .5 * guess
+
+# print(guess)
+# print(num_guesses) no high or low boundaries
+
+x = 54321
+epsilon = .01
+num_guesses = 0
+low = 0.0
+high = x
+guess = (high + low) / 2
+
+while abs(guess**2 - x) >= epsilon:
+    if guess**2 < x:
+        low = guess
+    else:
+        high = guess
+    guess = (high + low) / 2.0
+    num_guesses += 1
+print(guess)
+print(num_guesses)
+
 # %%
