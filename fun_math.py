@@ -273,14 +273,17 @@ guess = x / 2
 
 # print(guess)
 # print(num_guesses) no high or low boundaries
-
-x = 54321
+# print in a loop if its not stopping
+x = .5
 epsilon = .01
 num_guesses = 0
 low = 0.0
 high = x
 guess = (high + low) / 2
 
+if x < 1 and x > 0:
+    high = 1
+    low = x
 while abs(guess**2 - x) >= epsilon:
     if guess**2 < x:
         low = guess
@@ -291,4 +294,44 @@ while abs(guess**2 - x) >= epsilon:
 print(guess)
 print(num_guesses)
 
+# %%
+x = 27
+epsilon = .01
+num_guesses = 0
+low = 0.0
+high = x
+guess = (high + low) / 2
+
+if x < 1 and x > 0:
+    high = 1
+    low = x
+while abs(guess**3 - x) >= epsilon:
+    if guess**3 < x:
+        low = guess
+    else:
+        high = guess
+    guess = (high + low) / 2.0
+    num_guesses += 1
+print(guess)
+print(num_guesses)
+
+# %%
+# newton rhapson rootfinder
+k = 24
+epsilon = .01
+guess = 1
+num_guesses = 0
+root = 3 # can do any root
+
+while abs(guess**root - k) >= epsilon:
+    num_guesses += 1
+    # formula
+    guess = guess - (((guess**root) - k)/ (root*guess**(root-1)))
+print(guess)
+print(num_guesses)
+
+
+# %%
+24**(1/3)
+float(sqrt(24))
 # %%
