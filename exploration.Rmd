@@ -579,7 +579,7 @@ ggplot(fires_by_state_year, aes(x = FIRE_YEAR, y = count)) +
     axis.title.y = element_text(margin = margin(r = 10)),
     panel.grid.minor = element_blank()
     )
-
+ggsave("outputs/wildfire_total_year_state.png", width = 8, height = 6, dpi = 300)
 # now inspect correlation matrix and corrplot between states
 
 fires_wide <- fires_by_state_year %>%
@@ -593,6 +593,11 @@ state_cor_matrix
 
 corrplot(state_cor_matrix, method = "color", type = "upper",
          addCoef.col = "black", tl.col = "black", diag = FALSE)
+
+png("outputs/state_correlation_matrix.png", width = 8, height = 8, units = "in", res = 300)
+corrplot(state_cor_matrix, method = "color", type = "upper",
+         addCoef.col = "black", tl.col = "black", diag = FALSE)
+dev.off()
 ```
 # Multivariant Analysis
 appropriate type of bivariant or multivariant analysis depends on nature of data:

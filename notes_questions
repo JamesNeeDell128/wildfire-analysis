@@ -46,7 +46,7 @@ future fire behavior in Colorado" or "what's the underlying fire-generating proc
 which 1992-2024 is just one 32-year realization" — then you are sampling, but from a genuinely unusual, 
 ill-defined population: not a fixed group of individuals, but a stochastic process unfolding over 
 time (climate, weather, fuel, ignition sources — all evolving, not static). In this framing, sampling 
-error genuinely does apply, but N
+error genuinely does apply, but N ## messed up SE correction equation
 N (the "total population") isn't a fixed countable number the way "300 million Americans" is — it's 
 more like "however many fire-years could theoretically have occurred under climate/ecological conditions 
 similar to this period," which is a much fuzzier, philosophically trickier quantity to pin down. This is 
