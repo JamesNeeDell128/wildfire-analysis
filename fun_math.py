@@ -139,7 +139,7 @@ slope_2 = slope_f.subs(x, 2)
 print(slope_2)
 
 # infinitely approach step size s to 0
-result = limit(slope_2, s, 0) # limit of slope as step size approaches 0
+result = limit(slope_2, s, 0) # slope as step size approaches 0
 print(result)
 
 # don't assign a specific value to x
@@ -147,3 +147,29 @@ result2 = limit(slope_f, s, 0)
 print(result2) # 2*x
 # %%
 # chain rule
+# can be useful for inferring the relationship between 2 variables when you have linked functions
+# dz/dx = dz/dy * dy/dx # y is output and input here so you can use that to infer output of z with respect to x
+# real example:
+# if you know d(temp) / d(day of year) and d(fire risk) / d(temp) then you could infer d(fire risk) / d(day of year)
+# then you'd have to integrate and find C to get the graph
+
+x, y = symbols('x y')
+# y = x**2 + 1
+# z = y**3 - 2
+
+# take derivative for both functions
+_y = x**2 + 1 # using y twice
+dy_dx = diff(_y)
+z = y**3 - 2
+dz_dy = diff(z)
+
+# calc derivative with chain rule, sub in x**2 + 1 for y
+dz_dx_chain = (dy_dx * dz_dy).subs(y, _y) 
+dz_dx_no_chain = diff(z.subs(y, _y)) 
+
+# both should be equal
+print(dz_dx_chain) # take the deriv of each, multiply then sub
+print(dz_dx_no_chain) # sub then take deriv
+
+# %%
+
