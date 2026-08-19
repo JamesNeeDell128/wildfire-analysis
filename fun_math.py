@@ -69,3 +69,81 @@ for i in range(2, 6): # logbase 1 is undefined because there are infinite soluti
     plot(f)
 
 # %%
+# using sympy to calculate limits
+x = symbols('x')
+f = 1 / x
+result = limit(f, x, oo) # oo is infinity, limit as x approaches infinity
+print(result)
+# %%
+# derivatives > tells the slope of a function and useful to 
+# measure rate of change of function at any point
+# slope = 0 is min or max (concavity etc)
+
+# derivative calculator
+# f(x) = x**2
+
+def derivative_x(f, x, step_size):
+    m = (f(x + step_size) - f(x)) / ((x + step_size) - x)
+    return m
+def my_function(x):
+    return x**2
+
+slope_at_2 = derivative_x(my_function, 2, .00001)
+print(slope_at_2)
+
+
+# %%
+# derivative calculator with sympy
+x = symbols('x')
+# Now just use Python syntax to declare function
+f = x**2
+# calculate the derivative of the function
+dx_f = diff(f) # diff() calculates derivative and creates dx_f object in sympy
+print(dx_f) # 2x
+# then use substitution feature in sympy
+print(dx_f.subs(x, 2)) # subing 2 for x in f
+
+# %%
+# partial derivatives or derivs of functions that have multiple input variables
+# d/dx, d/dy, hold other variable constant, slopes referred to as gradients
+
+from sympy import *
+from sympy.plotting import plot3d
+# Declare x and y to SymPy
+x,y = symbols('x y')
+# Now just use Python syntax to declare function
+f = 2*x**3 + 3*y**3
+# Calculate the partial derivatives for x and y
+dx_f = diff(f, x) # second paremter is derivative with respect to
+dy_f = diff(f, y)
+print(dx_f) # prints 6*x**2
+print(dy_f) # prints 9*y**2
+# plot the function
+plot3d(f) 
+# %%
+# using limits to calculate derivatives
+# slope calculation: x**2
+# using s in place of h
+x,s = symbols('x s') # s is step size
+
+# declare function
+f = x**2
+
+# sub into rise/run formula
+slope_f = (f.subs(x, x + s) - f) / ((x + s) - x)
+print(slope_f)
+
+# calculate slope at x = 2
+# substitute 2 for x
+slope_2 = slope_f.subs(x, 2)
+print(slope_2)
+
+# infinitely approach step size s to 0
+result = limit(slope_2, s, 0) # limit of slope as step size approaches 0
+print(result)
+
+# don't assign a specific value to x
+result2 = limit(slope_f, s, 0)
+print(result2) # 2*x
+# %%
+# chain rule
