@@ -72,6 +72,33 @@ without acknowledging which of these two framings they're actually operating in.
 
 
 
+*Does total fires correlate with total acres burned over time
+  - plot total fires over years
+  - plot total acres over years
+  - find correlation coefficient
+  * already done (see chunk 11 correlation table)
+  
+*Would average acres by fire year tell me if fires were getting bigger over time?
+  - could many small fires skew that statistic?
+  - correction: violin plot with year as a factor on x axis and log(fire size) on y > won't be able to see outliers but will see dist
+  - doesnt work still... wonky
+  - other solutions?
 
+* what is the population the data represents?
+  - depends on what questions I want to ask and how I want to ask them
+  
+* In what ways is this sample not random and biased?
+  - How was data obtained? How could this process bias the data
+    - recording instruments?
+    - input to database?
+    - reporting agencies
+    
+    
+  
+  
+  - is it a sample of all fires that occured between 1992 and 2024?
+  - is it a sample of all fires under ecological/climate conditions similar to this period?
+  - will I use it to make predictions about wildfires going forward
+  
 
 
