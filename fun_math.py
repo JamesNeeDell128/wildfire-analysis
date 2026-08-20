@@ -332,6 +332,177 @@ print(num_guesses)
 
 
 # %%
-24**(1/3)
-float(sqrt(24))
+
+# %%
+# probability - theoretical study of measuring certainty that an event will happen
+# P not x = 1- p
+
+# probability and odds
+
+# P(x) = O(x) / 1 + O(x)
+# O(x) = P(x) / 1 - P(x)
+
+# joint probability is like an and operator
+# P(A and B) = P(A) * P(B) product rule
+
+# union probabilities - prob of getting event A or B - or operation
+# with a die > chances of getting a 4 or 6
+# P(4 or 6) = 1/6 + 1/6 = 1/3
+
+# events that NOT mutually exclusive - events that can occur simultaneously
+
+# but with a coin flip and die roll chances of getting heads and a 6 is not 1/2 + 1/6
+# it is 1/2 + 1/12
+# to remove double count use sum rule of probability
+# P(A or B) = P(A) + P(B) - P(A) * P(B) # subtract joint probability
+# if events are mutually exclusive - only one outcome is allowed - joint probability (P(A and B) is 0)
+
+# %%
+# conditional probability - probability of event A occuring given event B has occured
+# P(A given B) or P(A|B)
+# Bayes Theorem - can use to flip conditional probabilities
+# P(A|B) = P(B|A)*P(A) / P(B)
+
+# abstraction and avoiding magic numbers
+p_coffee_drinker = .65
+p_cancer = .005
+p_coffee_drinker_given_cancer = .85
+p_cancer_given_coffee_drinker = p_coffee_drinker_given_cancer * p_cancer / p_coffee_drinker
+
+# prints 0.006538461538461539
+print(p_cancer_given_coffee_drinker)
+
+# %%
+# joint and union conditional probabilities
+# P(A and B) = P(B) * P(A|B)
+
+# unions but A may affect B
+# P(A or B) = P(A) + P(B) - P(A|B) * P(B)
+# %%
+# Binomial Distributions
+# measures how likely k success will happen out of n trails given P (probility of success)
+# from scratch
+
+# create factorial function to multiply consec ints down to 1
+def factorial(n: int):
+    f = 1
+    for i in range(n):
+        f *= (i + 1)
+    return f
+
+print(factorial(5))
+
+# generate coefficient needed for binomial distribution, # select k outcomes from n possibilites
+def binomial_coefficient(n: int, k: int):
+    return factorial(n) / (factorial(k)* factorial(n - k))
+
+# binomial distribution calculates the probability of k events out of n trials
+# given the p probability of k occuring
+def binomial_distribution(k: int, n: int, p: float):
+    return binomial_coefficient(n, k) * (p ** k) * (1 - p) ** (n - k)
+
+
+
+
+# 10 trials where each has 90% success probability
+n = 10
+p = 0.9
+
+# print(factorial(n))
+# print(binomial_coefficient(n,k))
+# print(binomial_distribution(k,n,p))
+
+for k in range(n + 1):
+    probability = binomial_distribution(k, n, p)
+    print("{0} - {1}".format(k, probability))
+
+
+
+#%%
+from scipy.stats import binom
+
+n = 10 # number of trials
+p = 0.9 # probility of success (given)
+
+for k in range(n + 1):
+    probability = binom.pmf(k, n, p) # probability mass function
+    print("{0} - {1}".format(k, probability))
+
+# %%
+# beta distribution - probabilities of probabilities
+# use to calculate the probability that probability is a certain value given a number of successes and failures out of n trials
+
+from scipy.stats import beta
+a = 30 # number of successes
+b = 6 # number of failures
+
+# use cumulative density function to calcultate area under curve up to a given x value (.90)
+p1 = beta.cdf(.90, a, b) # gives us area up to 90% underlying probability of success
+print(p1) # there is a 77.5 % chance that given 8 / 10 success the probability of success (or success rate) will be less than 90%
+
+p = 1 - beta.cdf(.90, a, b)
+print(p) # tells us there is a 22.5 % chance that given 8 / 10 success the probability of success (or success rate) will be 90% or greater
+
+# calculate if underlying success rate between 80 and 90%
+
+p3 = beta.cdf(.90, a, b) - beta.cdf(.80, a, b)
+print(p3)
+
+# to see beta dist from scratch go to appendix A pg 292-293 
+# %%
+a = .3
+b = .4
+
+# P(a and b)
+p = a*b
+print(p)
+
+# P(!a or b)
+# addition - joint prob
+p1 = (1 - a) + b  - ((1 - a) * b)
+print(p1)
+
+p2 = a * (b - .2)
+print(p2)
+
+# %%
+# You have 137 passengers booked on a flight from Las Vegas to Dallas. However,
+# it is Las Vegas on a Sunday morning and you estimate each passenger is 40%
+# likely to not show up.
+# You are trying to figure out how many seats to overbook so the plane does not fly
+# empty.
+# How likely is it at least 50 passengers will not show up?
+
+n = 137 # number of trials
+p = 0.4 # probility of success (given)
+no_show = 0
+
+# calculate binomial distribution
+for k in range(50, n + 1):
+    probability = binom.pmf(k, n, p) # probability mass function
+    no_show += probability # add up probabilities from 50 to 137
+    print("{0} - {1}".format(k, probability))
+print(f' There is a {no_show * 100} % chance that at least 50 passengers will not show up')
+
+
+# %%
+# You flipped a coin 19 times and got heads 15 times and tails 4 times.
+# Do you think this coin has any good probability of being fair? Why or why not?
+
+# use beta distribution to get probability of fairness (.5)
+# what is the probability that given a 15/19 'success' rate the underlying prob of success will be in a close
+# range around .5?
+from scipy.stats import beta
+a = 15 # number of successes
+b = 4 # number of failures
+
+# use cumulative density function to calcultate area under curve up to a given a close range (.49 - .51))
+p4 = beta.cdf(0.51, a, b) - beta.cdf(0.49, a, b)
+print(p4)
+# or look at likelihood to be above .5 probability of successes
+p5 = 1 - beta.cdf(0.5, a, b)
+print(p5)
+# intuitively I think it could be fair but beta says it is not. If I could run more tests I would get a better answer
+# but beta says don't
+
 # %%
