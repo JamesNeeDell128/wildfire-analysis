@@ -158,3 +158,13 @@ for key, value in counts.items(): # split tuples created into 2. key grabs first
 print(modes) # prints modes as first entry then frequency as second
 
 # modes.append(f"{key} (appears {value} times)") f string inside the loop ***sick!!
+
+# %%
+# mutates list
+def square_list(L): # iterate over length of list
+    for i in range(len(L)):
+        L[i] = L[i]**2 # no return value for mutating functions
+# %%
+lst = [2, 6, 8]
+square_list(lst)
+# %%
