@@ -543,19 +543,25 @@ print(median(sample))
 # %%
 # easiest leetcode problem. two sum. took 5 min
 a = [3, 6, 8, 12, 7] 
-b = 18
+b = 10
+ 
 # find positions in a that sum to b
 
-# check first against rest
+# check first against rest then update code
 def check_first(a, b):
+    solution = False # set condition if no elements add to input value
     for j in range(len(a)):
         r = -1 # will need to reset after each loop
         for i in a:
             r += 1
             if i + a[j] == b:
         # how do I return the position in the brackets? r counter, j
+                solution = True
                 return j , r 
-     
+    if solution == False:
+        return "no two elements add to input value" 
 
 print(check_first(a, b))
+# %%
+
 # %%
