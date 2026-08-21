@@ -5,6 +5,7 @@ from scipy.stats import beta
 from sympy.plotting import plot3d
 from collections import defaultdict
 import math
+from scipy.stats import norm
 # %%
 # charting a linear function
 from sympy import*
@@ -453,4 +454,59 @@ for key, value in counts.items(): # split tuples created into 2. key grabs first
         modes.append((key, value)) # adds key into empty modes list, append only accepts 1 arg
 print(modes) # prints modes as first entry then frequency as second
 
+# modes.append(f"{key} (appears {value} times)") f string inside the loop ***sick!!
 # %%
+# calculating variance. population, divide by n -1 for a sample which increases uncertainty for a sample
+# V(V is squared) = (sum(x1 - mean)**2 + (x2 - mean)**2 +...+ (xn - mean)*2) / N where in is number of data points in population
+
+# Number of pets each person owns
+data = [0, 1, 5, 7, 9, 10, 14]
+
+def variance(values, is_sample: bool = False): # default is_sample parameter is false
+    sum = 0
+    mean = np.sum(values) / len(values)
+    for i in values:
+        sum += (i - mean)**2
+    return sum / (len(values) - (1 if is_sample else 0)) # population will be N - 0 and sample n - 1
+
+print(variance(data, True))
+
+# standard deviation function (just square root of variance which brings it back down to scale of data)
+# population, divide by n - 1 for a sample which increases uncertainty for a sample
+def std_(values, is_sample: bool = False):
+    sum = 0
+    mean = np.sum(values) / len(values)
+    for i in values:
+        sum += (i - mean)**2
+    return sqrt(sum / (len(values) - (1 if is_sample else 0))) # just took sqrt of return value
+
+print(std_(data, True))
+
+# %%
+# normal distribution
+# probability density function PDF
+# normal distribution, returns likelihood
+# takes mean, std deviation and x value so you can find likelihood at that given value
+def normal_pdf(x: float, mean: float, std_dev: float) -> float:
+    return (1.0 / (2.0 * math.pi * std_dev ** 2) ** 0.5) * math.exp(-1.0 * ((x - mean) ** 2 / (2.0 * std_dev ** 2)))
+
+# normal distribution is continuous so we need to integrate a range of x values 
+# to find the an area under the curve
+#%%
+# normal distribution cumulative density function
+# calculate area under cdf, it compares 1:1 with area under PDF
+from scipy.stats import norm
+mean = 64.43
+std_dev = 2.99
+x = norm.cdf(64.43, mean, std_dev)
+print(x) # prints 0.5
+
+mean = 64.43
+std_dev = 2.99
+x = norm.cdf(66, mean, std_dev) - norm.cdf(62, mean, std_dev)
+print(x) # prints 0.4920450147062894
+
+# You should find the probability of observing a golden retriever between 62 and
+# 66 pounds to be 0.4920, or approximately 49.2%.
+# %%
+# inverse CDF > look up the area under the CDF and return a corresponding x value
