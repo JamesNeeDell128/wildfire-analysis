@@ -506,3 +506,56 @@ print(p5)
 # but beta says don't
 
 # %%
+# descriptive statistics
+
+# calculating weighted mean
+sample = [90, 80, 63, 87]
+weights = [.20, .20, .20, .40]
+
+print(list(zip(sample, weights))) # combines sample and weight arrays
+
+weighted_mean = sum(s * w for s, w in zip(sample, weights)) / sum(weights)
+print(weighted_mean)
+
+8 // 2
+?len
+len(sample)
+sample[len(sample) - 1]
+# %%
+# median
+sample = [0, 1, 5, 7, 8, 10, 14, 7, 21, 4, 12, 4]
+
+len(sample) / 2
+
+def median(values):
+    ordered = sorted(values) # must sort to calculate median
+    print(ordered)
+    n = len(ordered)
+    if n % 2 == 0:
+        mid = (ordered[int(n / 2)] + ordered[int(n / 2) - 1]) / 2
+    else:
+        mid = ordered[n // 2]
+    return mid
+
+print(median(sample))
+
+
+# %%
+# easiest leetcode problem. two sum. took 5 min
+a = [3, 6, 8, 12, 7] 
+b = 18
+# find positions in a that sum to b
+
+# check first against rest
+def check_first(a, b):
+    for j in range(len(a)):
+        r = -1 # will need to reset after each loop
+        for i in a:
+            r += 1
+            if i + a[j] == b:
+        # how do I return the position in the brackets? r counter, j
+                return j , r 
+     
+
+print(check_first(a, b))
+# %%
