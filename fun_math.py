@@ -3,6 +3,7 @@ import sympy as sp
 import numpy as np
 from scipy.stats import beta
 from sympy.plotting import plot3d
+from collections import defaultdict
 import math
 # %%
 # charting a linear function
@@ -431,5 +432,25 @@ def median(values):
     return mid
 
 print(median(sample))
+
+# %%
+# mode
+
+# import allows us to fill an empty dictionary and increment at the same time
+from collections import defaultdict 
+
+sample = [1, 3, 2, 5, 7, 0, 2, 3]
+counts = defaultdict(int) # create counts dictionary
+for s in sample: # every time through sample counts is loaded with each key(value in sample) but if key already exists it will not be loaded twice
+    counts[s] += 1 # value associated with key(s) gets + 1
+print(counts)
+print(counts[7]) 
+max_count = max(counts.values())
+print(counts.items()) # gives seq of key-value pairs in tuple form
+modes = [] # set empty array for modes
+for key, value in counts.items(): # split tuples created into 2. key grabs first, value grabs second
+    if value == max_count: # value is number of times key repeats
+        modes.append((key, value)) # adds key into empty modes list, append only accepts 1 arg
+print(modes) # prints modes as first entry then frequency as second
 
 # %%
