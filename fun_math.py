@@ -1,6 +1,9 @@
 #%%
 import sympy as sp
 import numpy as np
+from scipy.stats import beta
+from sympy.plotting import plot3d
+import math
 # %%
 # charting a linear function
 from sympy import*
@@ -407,9 +410,10 @@ weighted_mean = sum(s * w for s, w in zip(sample, weights)) / sum(weights)
 print(weighted_mean)
 
 8 // 2
-?len
+
 len(sample)
 sample[len(sample) - 1]
+
 # %%
 # median
 sample = [0, 1, 5, 7, 8, 10, 14, 7, 21, 4, 12, 4]
